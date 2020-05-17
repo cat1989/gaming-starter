@@ -1,18 +1,39 @@
 import { Color } from './color'
 import { Game } from '../index/game'
+import { Viewport } from './viewport'
 
 document.body.style.margin = '0px'
+document.body.style.padding = '0px'
+document.body.style.overflow = 'hidden'
 
 export class GraphicsDevice {
     canvas: HTMLCanvasElement
 
     private game: Game
 
+    viewport: Viewport
+
     constructor(game: Game) {
         this.game = game
         this.canvas = document.createElement("canvas")
-        this.canvas.width = 640
-        this.canvas.height = 480
+        this.canvas.width = window.innerWidth
+        this.canvas.height = window.innerHeight
+        this.viewport = {
+            x: 0,
+            y: 0,
+            width: this.canvas.width,
+            height: this.canvas.height
+        }
+        window.addEventListener("resize", () => {
+            this.canvas.width = window.innerWidth
+            this.canvas.height = window.innerHeight
+            this.viewport = {
+                x: 0,
+                y: 0,
+                width: this.canvas.width,
+                height: this.canvas.height
+            }
+        }, false)
         document.body.appendChild(this.canvas)
         this.canvas.addEventListener("contextmenu", (e) => {
             e.preventDefault()

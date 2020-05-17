@@ -5,11 +5,13 @@ import { ContentManager } from '../content'
 export class Game {
     isMouseVisible: boolean
 
-    graphics?: GraphicsDevice
+    graphics: GraphicsDevice
 
     content: ContentManager
 
     protected loadContent() { }
+
+    protected initialize() { }
 
     protected update(gameTime: GameTime) { }
 
@@ -31,6 +33,7 @@ export class Game {
         }
         this.loadContent()
         if (this.content.assets.length == 0) {
+            this.initialize()
             onTick()
         }
         else {
@@ -46,6 +49,7 @@ export class Game {
                 }))
             })
             Promise.all(promises).then(res => {
+                this.initialize()
                 onTick()
             })
         }
@@ -54,5 +58,6 @@ export class Game {
     constructor() {
         this.isMouseVisible = true
         this.content = new ContentManager()
+        this.graphics = new GraphicsDevice(this)
     }
 }
