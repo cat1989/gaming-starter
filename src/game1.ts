@@ -1,60 +1,73 @@
 import { Game, GameTime, Vector2, Rectangle } from './framework'
 import { Keyboard, Keys, Mouse, ButtonState } from './framework/input'
-import { Color, SpriteBatch, Texture2D } from './framework/graphics'
+import { Color, SpriteBatch } from './framework/graphics'
+import { Sprite } from './sprite'
 
 export class Game1 extends Game {
     spriteBatch: SpriteBatch
 
-    spritePosition = Vector2.Zero
+    sprite: Sprite
 
     spriteSpeed = 10
 
-    texture2D: Texture2D = new Texture2D()
+    rotation = 0
+
+    scale = 1
 
     constructor() {
         super()
         this.spriteBatch = new SpriteBatch(this.graphics)
+        this.sprite = new Sprite()
     }
 
     initialize() {
-        this.spritePosition.x = (this.graphics.viewport.width - this.texture2D.width) * .5
-        this.spritePosition.y = (this.graphics.viewport.height - this.texture2D.height) * .5
+        this.sprite.position.x = (this.graphics.viewport.width - this.sprite.texture2D.width) * .5
+        this.sprite.position.y = (this.graphics.viewport.height - this.sprite.texture2D.height) * .5
     }
 
     loadContent() {
-        this.texture2D = this.content.load("plane.png")
+        this.sprite.texture2D = this.content.load("plane.png")
     }
     
     update(gameTime: GameTime) {
+        const elapsedGameTime = gameTime.elapsedGameTime / 100
         const mouseState = Mouse.getState()
         const keyboardState = Keyboard.getState()
         if (keyboardState.isKeyDown(Keys.w)) {
-            this.spritePosition.y -= this.spriteSpeed
+            this.sprite.position.y -= this.spriteSpeed * elapsedGameTime * 10
         }
         if (keyboardState.isKeyDown(Keys.a)) {
-            this.spritePosition.x -= this.spriteSpeed
+            this.sprite.position.x -= this.spriteSpeed * elapsedGameTime * 5
         }
         if (keyboardState.isKeyDown(Keys.s)) {
-            this.spritePosition.y += this.spriteSpeed
+            this.sprite.position.y += this.spriteSpeed * elapsedGameTime * 10
         }
         if (keyboardState.isKeyDown(Keys.d)) {
-            this.spritePosition.x += this.spriteSpeed
+            this.sprite.position.x += this.spriteSpeed * elapsedGameTime * 5
+        }
+        if (keyboardState.isKeyDown(Keys.left)) {
+            this.rotation -= this.spriteSpeed * elapsedGameTime * 2
+        }
+        if (keyboardState.isKeyDown(Keys.right)) {
+            this.rotation += this.spriteSpeed * elapsedGameTime * 2
         }
         if (keyboardState.isKeyDown(Keys.space)) {
-            this.spritePosition.x = (this.graphics.viewport.width - this.texture2D.width) * .5
-            this.spritePosition.y = (this.graphics.viewport.height - this.texture2D.height) * .5
+            this.sprite.position.x = (this.graphics.viewport.width - this.sprite.texture2D.width) * .5
+            this.sprite.position.y = (this.graphics.viewport.height - this.sprite.texture2D.height) * .5
         }
         if (mouseState.leftButton == ButtonState.pressed &&
             new Rectangle(
-                this.spritePosition.x,
-                this.spritePosition.y,
-                this.texture2D.width,
-                this.texture2D.height
+                this.sprite.position.x,
+                this.sprite.position.y,
+                this.sprite.texture2D.width,
+                this.sprite.texture2D.height
             ).contains(
                 new Vector2(mouseState.x, mouseState.y)
             )) {
             console.log('click')
         }
+        const degree = gameTime.totalGameTime * Math.PI / 180
+        this.scale = (.02 * Math.sin(degree / 10) + .99) * .75
         super.update(gameTime)
     }
 
@@ -62,7 +75,13 @@ export class Game1 extends Game {
         this.graphics.clear(Color.cornflowerBlue)
 
         this.spriteBatch.begin()
-        this.spriteBatch.draw(this.texture2D, this.spritePosition)
+        this.spriteBatch.draw(
+            this.sprite.texture2D,
+            this.sprite.position,
+            this.rotation,
+            new Vector2(this.sprite.texture2D.width * .5, this.sprite.texture2D.height * .5),
+            this.scale
+        )
         this.spriteBatch.end()
 
         super.draw(gameTime)
