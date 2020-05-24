@@ -41,7 +41,7 @@ export class SpriteBatch {
                 context.drawImage(texture.image, -width, -height)
             }
             else if (params instanceof Rectangle) {
-                context.drawImage(texture.image, -.5 * width, -.5 * height, params.width, params.height)
+                context.drawImage(texture.image, -width, -height, params.width, params.height)
             }
             context.restore()
         }

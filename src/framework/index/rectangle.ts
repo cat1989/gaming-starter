@@ -24,4 +24,11 @@ export class Rectangle {
             point.y <= this.y + this.height
         )
     }
+
+    center() {
+        return new Vector2(
+            this.x + this.width * .5,
+            this.y + this.height * .5
+        )
+    }
 }
